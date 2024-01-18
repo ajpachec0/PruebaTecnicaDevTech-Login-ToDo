@@ -21,7 +21,7 @@ const handler = NextAuth({
 
         if (!userFound) throw new Error("Invalid Credentials");
 
-        const validatePassword = await bcrypt.compareSync(
+        const validatePassword = await bcrypt.compare(
           credentials!.password,
           userFound.password
         );
