@@ -41,8 +41,6 @@ export const LoginForm = () => {
   });
 
   const handleSubmit = async (data: LoginRequestType) => {
-    console.log(data);
-
     const res = await signIn("credentials", {
       email: data.email,
       password: data.password,
@@ -52,15 +50,10 @@ export const LoginForm = () => {
     if (res?.error) return setError(res.error as string);
 
     toast.success("Logged in successfully");
-    if (res?.ok) return router.push("/dashboard");
-
-    console.log(res);
+    if (res?.ok) return router.push("/");
 
     form.reset();
   };
-
-  const formErrors = form.formState.errors;
-  console.log(formErrors);
 
   return (
     <Form {...form}>

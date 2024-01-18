@@ -16,7 +16,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -41,30 +41,31 @@ export const RegisterForm = () => {
   });
 
   const handleSubmit = async (data: LoginRequestType) => {
-    console.log(data);
+    try {
+      const signUpResponse = await axios.post("/api/auth/signup", {
+        email: data.email,
+        password: data.password,
+        fullname: data.fullname,
+      });
 
-    /*  const signUpResponse = await axios.post("/api/auth/signup", {
-      email: data.email,
-      password: data.password,
-      fullname: data.fullname,
-    }); */
+      const res = await signIn("credentials", {
+        email: data.email,
+        password: data.password,
+        redirect: false,
+      });
 
-    const res = await signIn("credentials", {
-      email: data.email,
-      password: data.password,
-      redirect: false,
-    });
+      if (res?.ok) {
+        router.push("/");
+        toast.success("Account created successfully");
+      }
 
-    if (res?.ok) return router.push("/dashboard");
-
-    toast.success("Account created successfully");
-    console.log(res);
-
-    form.reset();
+      form.reset();
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        setError(error.response?.data?.message);
+      }
+    }
   };
-
-  const formErrors = form.formState.errors;
-  console.log(formErrors);
 
   return (
     <Form {...form}>
